@@ -4,6 +4,9 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
 (async () => {
 
+  // store the list of filtered files
+  let files: string[] = [];
+
   // Init the Express application
   const app = express();
 
@@ -30,7 +33,37 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   /**************************************************************************** */
 
   //! END @TODO1
-  
+
+  app.get("/filteredimage", async (req: Request, res: Response) => {
+    let { image_url } = req.query;
+
+    if(!image_url) {
+      return res.status(400).send('image_url is required.');
+    }
+
+    let content_type;
+
+    // get file type
+    let idx = image_url.lastIndexOf('.');
+    let file_type = image_url.substring(idx).toLowerCase();
+
+    if(file_type == ".jpg" || file_type == ".jpeg") {
+      content_type = "image/jpg";
+    } else if(file_type == ".png") {
+      content_type = "image/png";
+    } else {
+      res.set('Content-Type', content_type);
+      return res.status(400).send(`Unsupported file type: ${file_type}`);
+    }
+
+    let localFile = await filterImageFromURL(image_url);
+    // add it to the list of filtered images
+    files.push(localFile);
+
+    return res.status(200).sendFile(localFile);
+  });
+
+
   // Root Endpoint
   // Displays a simple message to the user
   app.get( "/", async ( req, res ) => {
@@ -43,4 +76,17 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
       console.log( `server running http://localhost:${ port }` );
       console.log( `press CTRL+C to stop server` );
   } );
+
+  /*
+  app.on('close',() => {
+    deleteLocalFiles(files);
+  })
+  */
+
+  process.on('SIGTERM', () => {
+    console.log("Deleting tmp files: filtered images ..");
+    deleteLocalFiles(files);
+    console.log("Deleting tmp files: done.");
+  });
+
 })();
