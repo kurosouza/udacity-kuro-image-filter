@@ -45,7 +45,7 @@ import { filterImageFromURL, deleteLocalFiles } from './util/util';
       return res.status(400).send('image_url is required.');
     }
 
-    let content_type;
+    let content_type: string;
 
     // get file type
     let idx: number = image_url.lastIndexOf('.');
