@@ -34,8 +34,12 @@ import { filterImageFromURL, deleteLocalFiles } from './util/util';
 
   //! END @TODO1
 
-  app.get("/filteredimage", async (req: Request, res: Response) => {
-    let { image_url } = req.query;
+  const deleteFiles = () => {
+    deleteLocalFiles(files);
+  };
+
+  app.get("/filteredimage", async (req: Request, res: Response, deleteFiles) => {
+    let image_url: string = req.query.image_url;
 
     if (!image_url) {
       return res.status(400).send('image_url is required.');
@@ -44,8 +48,8 @@ import { filterImageFromURL, deleteLocalFiles } from './util/util';
     let content_type;
 
     // get file type
-    let idx = image_url.lastIndexOf('.');
-    let file_type = image_url.substring(idx).toLowerCase();
+    let idx: number = image_url.lastIndexOf('.');
+    let file_type: string = image_url.substring(idx).toLowerCase();
 
     if (file_type == ".jpg" || file_type == ".jpeg") {
       content_type = "image/jpg";
@@ -54,7 +58,7 @@ import { filterImageFromURL, deleteLocalFiles } from './util/util';
       return res.status(400).send(`Unsupported file type: ${file_type}`);
     }
 
-    let localFile = await filterImageFromURL(image_url);
+    let localFile: string = await filterImageFromURL(image_url);
     // add it to the list of filtered images
     files.push(localFile);
 
@@ -74,12 +78,6 @@ import { filterImageFromURL, deleteLocalFiles } from './util/util';
     console.log(`server running http://localhost:${port}`);
     console.log(`press CTRL+C to stop server`);
   });
-
-  /*
-  app.on('close',() => {
-    deleteLocalFiles(files);
-  })
-  */
 
   process.on('SIGTERM', () => {
     console.log("Deleting tmp files: filtered images ..");

@@ -3,6 +3,9 @@
 ### Image Filter Project URL
 [udacity-kuro-image-filter-dev.us-east-1.elasticbeanstalk.com](udacity-kuro-image-filter-dev.us-east-1.elasticbeanstalk.com)
 
+### Github Repository URL
+[https://github.com/kurosouza/udacity-kuro-image-filter](https://github.com/kurosouza/udacity-kuro-image-filter)
+
 
 Udagram is a simple cloud application developed alongside the Udacity Cloud Engineering Nanodegree. It allows users to register and log into a web client, post photos to the feed, and process photos using an image filtering microservice.
 
